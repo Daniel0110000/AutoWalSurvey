@@ -1,12 +1,9 @@
 package dev.dr10.autowalsurvey.ui.screen
 
 import android.Manifest
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.os.Build
-import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,12 +11,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,9 +28,11 @@ import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
+import dev.dr10.autowalsurvey.domain.model.ImageInfoModel
 import dev.dr10.autowalsurvey.ui.components.CodeActionsComponent
-import dev.dr10.autowalsurvey.ui.components.ImagePreviewComponent
+import dev.dr10.autowalsurvey.ui.components.PendingImagesComponent
 import dev.dr10.autowalsurvey.ui.components.WebViewComponent
+import dev.dr10.autowalsurvey.ui.theme.AppTheme
 import dev.dr10.autowalsurvey.ui.viewModel.MainViewModel
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -41,20 +43,21 @@ fun MainScreen(
 
     val state = viewModel.state.collectAsState().value
     val context = LocalContext.current
-    var bitmap: Bitmap? by remember { mutableStateOf(null) }
+    var code by remember { mutableStateOf("") }
     var startProcess by remember { mutableStateOf(false) }
+    var currentImageIndex by remember { mutableIntStateOf(0) }
+    var imagesToProcess by remember { mutableStateOf(emptyList<ImageInfoModel>()) }
+
+    LaunchedEffect(currentImageIndex) {
+        if (currentImageIndex < imagesToProcess.size) {
+            code = imagesToProcess[currentImageIndex].code
+            startProcess = true
+        }
+    }
 
     val imageCropLauncher = rememberLauncherForActivityResult(contract = CropImageContract()) { result ->
         if (result.isSuccessful) {
-            result.uriContent?.let {
-                viewModel.extractTextFromImage(it, context)
-                bitmap = if (Build.VERSION.SDK_INT < 28) {
-                    MediaStore.Images.Media.getBitmap(context.contentResolver, it)
-                } else {
-                    val source = ImageDecoder.createSource(context.contentResolver, it)
-                    ImageDecoder.decodeBitmap(source)
-                }
-            }
+            result.uriContent?.let { viewModel.addImage(it, context) }
         }
     }
 
@@ -70,7 +73,7 @@ fun MainScreen(
                 )
                 imageCropLauncher.launch(cropOptions)
             }
-            else Log.d("MainScreen", "Camera permission denied")
+            else Log.e("MainScreen", "CAMERA::PERMISSION::DENIED")
         }
     )
 
@@ -78,6 +81,7 @@ fun MainScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(padding)
+            .background(AppTheme.colors.background)
     ) {
         Spacer(Modifier.height(12.dp))
 
@@ -85,37 +89,53 @@ fun MainScreen(
             WebViewComponent(
                 modifier = Modifier.weight(1f),
                 viewModel = viewModel,
+                code = code,
                 startProcess = startProcess
             ) {
                 startProcess = false
-                viewModel.setCode("")
-                bitmap = null
+                viewModel.deleteImage(imagesToProcess[currentImageIndex])
+                if (currentImageIndex < imagesToProcess.size - 1) currentImageIndex++
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-        }
+        } else Spacer(modifier = Modifier.weight(1f))
 
+        PendingImagesComponent(
+            state.imagesPending,
+            context,
+            onUpdateCode = { uri, code -> viewModel.updateCode(code, uri) },
+            onDelete = { viewModel.deleteImage(it) }
+        )
 
-        ImagePreviewComponent(bitmap)
+        Spacer(modifier = Modifier.height(8.dp))
 
         CodeActionsComponent(
-            value = state.code,
             isProcessing = startProcess,
-            onValueChange = { viewModel.setCode(it) },
             onCameraLauncher = { cameraPermissionState.launchPermissionRequest() },
             onGalleryLauncher = { 
                 val cropOptions = CropImageContractOptions(
                     null,
-                    CropImageOptions(imageSourceIncludeCamera = false)
+                    CropImageOptions(
+                        imageSourceIncludeCamera = false,
+                        toolbarColor = AppTheme.colors.background.toArgb(),
+                        activityBackgroundColor = AppTheme.colors.background.toArgb(),
+                        toolbarTitleColor = AppTheme.colors.text.toArgb(),
+                        progressBarColor = AppTheme.colors.complementary.toArgb()
+                    )
                 )
                 imageCropLauncher.launch(cropOptions)
             },
-            onReloadPage = {
+            onRestartState = {
                 startProcess = false
-                viewModel.setCode("")
-                bitmap = null
+                viewModel.clearPendingImages()
             },
-            onStartProcess = { startProcess = true }
+            onStartProcess = {
+                imagesToProcess = viewModel.getAllImagesToProcess()
+                if (imagesToProcess.isEmpty()) return@CodeActionsComponent
+                currentImageIndex = 0
+                code = imagesToProcess[currentImageIndex].code
+                startProcess = true
+            }
         )
 
         Spacer(Modifier.height(12.dp))

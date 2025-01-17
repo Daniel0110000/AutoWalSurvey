@@ -60,12 +60,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Dagger Hilt
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    kapt(libs.hilt.android.compiler)
 
-    // Koin
-//    implementation(libs.koin.androidx.compose)
 
     // Text Recognition
     implementation(libs.text.recognition)
@@ -79,12 +77,7 @@ dependencies {
     // Permissions
     implementation(libs.accompanist.permissions)
 
-    // Coil
-    implementation(libs.coil.compose)
-
-    // Room db
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
+    // Splash Screen
+    implementation(libs.androidx.core.splashscreen)
 
 }

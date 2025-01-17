@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 fun WebViewComponent(
     modifier: Modifier,
     viewModel: MainViewModel,
+    code: String,
     startProcess: Boolean,
     onSurveyFinished: () -> Unit
 ) = AndroidView(
@@ -41,31 +42,29 @@ fun WebViewComponent(
                 override fun onPageFinished(view: WebView, url: String) {
                     super.onPageFinished(view, url)
                     scope.launch {
-                        Log.d("WebViewComponent", "onPageFinished::$url")
-                        delay(1500)
+                        Log.d("WebViewComponent", "ON::PAGE::FINISH::$url")
+                        delay(1200)
                         view.evaluateJavascript(viewModel.payloadForExtractProgress) { consoleResult ->
                             val number = Regex("\\d+").find(consoleResult)?.value
-                            if (number != null && allProgress.contains(number).not()) {
-                                Log.d("WebViewComponent", "consoleResult::$number")
-                                if (number == "0") view.evaluateJavascript(viewModel.getFirstPayload(), null)
+                            if (number != null && allProgress.contains(number).not() && number != "38") {
+                                Log.d("WebViewComponent", "CONSOLE::RESULT::$number")
+                                if (number == "0") view.evaluateJavascript(viewModel.getFirstPayload(code), null)
                                 else {
                                     val payload = viewModel.payloadByProgress[number]
                                     if (payload != null) view.evaluateJavascript(payload, null)
                                 }
                                 allProgress.add(number)
                             } else {
-                                view.evaluateJavascript(viewModel.payloadForVerifiedCompleted) { isCompleted ->
-                                    if (isCompleted == "true") {
-                                        allProgress.clear()
-                                        onSurveyFinished()
-                                    }
-                                    else Log.d("WebViewComponent", "isCompleted::$isCompleted?")
+                                view.evaluateJavascript(viewModel.payloadForVerifiedCompleted) { _ ->
+                                    allProgress.clear()
+                                    onSurveyFinished()
                                 }
                             }
                         }
-                        Log.d("WebViewComponent", "allProgress::$allProgress")
+                        Log.d("WebViewComponent", "All::PROCESS::$allProgress")
                     }
                 }
+
             }
             clearCache(true)
             if (startProcess) loadUrl(Constants.BASE_URL)

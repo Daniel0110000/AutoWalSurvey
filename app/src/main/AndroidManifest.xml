@@ -20,7 +20,7 @@
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.AutoWalSurvey">
+            android:theme="@style/Theme.AutoWalSurvey.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,16 +28,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.canhub.cropper.CropImageActivity"
-            android:theme="@style/Theme.AppCompat"/>
-        <provider
-            android:authorities="${applicationId}.provider"
-            android:name="androidx.core.content.FileProvider"
-            android:grantUriPermissions="true"
-            android:exported="false">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/path_provider"/>
-        </provider>
+            android:theme="@style/Theme.CropImage"/>
     </application>
 
 </manifest>

@@ -8,7 +8,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.dr10.autowalsurvey.domain.utils.Constants
+import dev.dr10.autowalsurvey.domain.model.ImageInfoModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,26 +42,47 @@ class MainViewModel @Inject constructor(): ViewModel() {
     val payloadForVerifiedCompleted = "document.getElementsByClassName(\"exit-message-header\").length == 1;"
 
     data class MainState(
-        val code: String = ""
+        val imagesPending: List<ImageInfoModel> = mutableListOf()
     )
 
-    fun extractTextFromImage(uri: Uri, context: Context) {
+    fun addImage(uri: Uri, context: Context) {
         val image: InputImage = InputImage.fromFilePath(context, uri)
         recognizer.process(image)
-            .addOnSuccessListener { setCode(it.text.replace("\\s".toRegex(), "").replace("O", "0")) }
+            .addOnSuccessListener {
+                val textExtracted = it.text.replace("\\s".toRegex(), "").replace("O", "0")
+                updateState {
+                    copy(
+                        imagesPending = (imagesPending + ImageInfoModel(uri = uri, code = textExtracted)).toMutableList()
+                    )
+                }
+            }
             .addOnFailureListener { e ->
-                Log.e("MainViewModel", "Error extracting text from image: ${e.message}")
+                Log.e("MainViewModel", "ERROR::EXTRACTING::TEXT::FROM::IMAGE::${e.message}")
             }
     }
 
-    fun getFirstPayload(): String {
-        val code = _state.value.code
-        return if (code.isNotBlank()) "document.getElementById(\"ans1514.0.1\").value = \"$code\"; document.getElementById(\"btn_continue\").click();"
-        else ""
+    fun getAllImagesToProcess(): List<ImageInfoModel> = _state.value.imagesPending
+
+    fun updateCode(newCode: String, uri: Uri) {
+        val newPendingImages = _state.value.imagesPending.map { info ->
+            if (info.uri == uri) info.copy(code = newCode)
+            else info
+        }
+        updateState { copy(imagesPending = newPendingImages) }
     }
 
-    fun setCode(code: String) {
-        updateState { copy(code = code) }
+    fun deleteImage(model: ImageInfoModel) {
+        val newPendingImages = _state.value.imagesPending.filter { it != model }
+        updateState { copy(imagesPending = newPendingImages) }
+    }
+
+    fun clearPendingImages() {
+        updateState { copy(imagesPending = emptyList()) }
+    }
+
+    fun getFirstPayload(code: String): String {
+        return if (code.isNotBlank()) "document.getElementById(\"ans1514.0.1\").value = \"$code\"; document.getElementById(\"btn_continue\").click();"
+        else ""
     }
 
     private fun updateState(update: MainState.() -> MainState) {
