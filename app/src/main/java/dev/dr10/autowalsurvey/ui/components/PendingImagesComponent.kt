@@ -16,7 +16,6 @@ fun PendingImagesComponent(
     onUpdateCode: (Uri, String) -> Unit,
     onDelete: (ImageInfoModel) -> Unit
 ) {
-    println("IMAGES::PENDING::$images")
     if (images.isNotEmpty()) {
         LazyRow(modifier = Modifier.fillMaxWidth()) {
             items(images) { info ->
