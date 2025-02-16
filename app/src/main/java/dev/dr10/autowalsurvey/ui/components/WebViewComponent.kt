@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
@@ -43,24 +44,33 @@ fun WebViewComponent(
                     super.onPageFinished(view, url)
                     scope.launch {
                         Log.d("WebViewComponent", "ON::PAGE::FINISH::$url")
-                        delay(1200)
-                        view.evaluateJavascript(viewModel.payloadForExtractProgress) { consoleResult ->
-                            val number = Regex("\\d+").find(consoleResult)?.value
-                            if (number != null && allProgress.contains(number).not() && number != "38") {
-                                Log.d("WebViewComponent", "CONSOLE::RESULT::$number")
-                                if (number == "0") view.evaluateJavascript(viewModel.getFirstPayload(code), null)
-                                else {
-                                    val payload = viewModel.payloadByProgress[number]
-                                    if (payload != null) view.evaluateJavascript(payload, null)
-                                }
-                                allProgress.add(number)
-                            } else {
-                                view.evaluateJavascript(viewModel.payloadForVerifiedCompleted) { _ ->
+                        delay(1400)
+                        if (allProgress.isEmpty()) {
+                            view.evaluateJavascript(viewModel.getFirstPayload(code), null)
+                            allProgress.add("0")
+                        } else {
+                            Log.d("WebViewComponent", "Enter to else")
+                            view.evaluateJavascript(viewModel.payloadForExtractProgress) { consoleResult ->
+                                val progressNumber = consoleResult.clearNumber()
+                                if (!consoleResult.contains("null") && !allProgress.contains(progressNumber)) {
+                                    Log.d("WebViewComponent", "CONSOLE::RESULT::$progressNumber")
+                                    val payload = viewModel.payloadByProgress[progressNumber]
+                                    if (payload != null) {
+                                        view.evaluateJavascript(payload, null)
+                                        if (progressNumber == "12") {
+                                            runBlocking { delay(1000) }
+                                            view.evaluateJavascript("document.getElementById(\"buttonNext\").click();", null)
+                                        }
+                                    }
+                                    else Log.e("WebViewComponent", "PAYLOAD::NOT::FOUND::$progressNumber")
+                                    allProgress.add(progressNumber)
+                                } else {
                                     allProgress.clear()
                                     onSurveyFinished()
                                 }
                             }
                         }
+
                         Log.d("WebViewComponent", "All::PROCESS::$allProgress")
                     }
                 }
@@ -75,3 +85,5 @@ fun WebViewComponent(
         .padding(horizontal = 12.dp)
         .clip(RoundedCornerShape(15.dp))
 )
+
+fun String.clearNumber(): String = this.replace("%", "").replace("\"", "")

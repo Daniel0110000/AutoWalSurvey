@@ -22,24 +22,12 @@ class MainViewModel @Inject constructor(): ViewModel() {
 
     private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
-    val payloadForExtractProgress = "document.getElementsByClassName(\"progress-text\")[0].textContent;"
+    val payloadForExtractProgress = "document.querySelector(\".progressbar_progressBarIndicator\").style.width;"
 
     val payloadByProgress: Map<String, String> = mapOf(
-        "37" to "document.getElementById(\"btn_continue\").click();",
-        "50" to "document.getElementsByClassName(\"atmrating-last\")[0].click();",
-        "52" to "document.getElementById(\"ans2353.0.0\").value = \"Buen servicio\"; document.getElementById(\"btn_continue\").click();",
-        "53" to "document.getElementsByClassName(\"atmrating-last\")[0].click();",
-        "55" to "document.getElementsByClassName(\"atmrating-last\")[0].click();",
-        "57" to "document.querySelectorAll(\".atmrating-last\").forEach(element => { element.click(); });",
-        "60" to "document.getElementsByClassName(\"atmrating-last\")[0].click();",
-        "62" to "document.getElementById(\"ans319.0.1\").click();",
-        "64" to "document.getElementById(\"ans1663.0.1\").click(); document.getElementById(\"btn_continue\").click();",
-        "84" to "document.getElementById(\"ans1670.0.1\").click();",
-        "86" to "document.getElementById(\"ans1412.0.1\").click(); document.getElementById(\"btn_continue\").click();",
-        "98" to "document.getElementById(\"btn_continue\").click();",
+        "12" to "document.getElementById(\"onf_q_wmcam_brick_ltr_scale11_10\").click(); document.getElementById(\"spl_q_wmcam_brick_comentario_ltr_promotor_cmt\").value = \"pepe\"; document.getElementById(\"onf_q_wmcam_brick_flex_yn_2\").click();",
+        "87" to "document.getElementById(\"onf_q_wmcam_sorteo_trabaja_en_wm_yn_2\").click(); document.getElementById(\"onf_q_wmcam_sorteo_participar_yn_2\").click(); document.getElementById(\"onf_q_wmcam_sorteo_comunicaciones_yn_2\").click(); document.getElementById(\"buttonFinish\").click();"
     )
-
-    val payloadForVerifiedCompleted = "document.getElementsByClassName(\"exit-message-header\").length == 1;"
 
     data class MainState(
         val imagesPending: List<ImageInfoModel> = mutableListOf()
@@ -81,7 +69,7 @@ class MainViewModel @Inject constructor(): ViewModel() {
     }
 
     fun getFirstPayload(code: String): String {
-        return if (code.isNotBlank()) "document.getElementById(\"ans1514.0.1\").value = \"$code\"; document.getElementById(\"btn_continue\").click();"
+        return if (code.isNotBlank()) "document.getElementById(\"spl_q_wmcam_brick_num_ticket_txt\").value = \"$code\"; document.getElementById(\"buttonBegin\").click();"
         else ""
     }
 
