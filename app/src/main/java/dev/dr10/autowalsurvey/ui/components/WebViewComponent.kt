@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import dev.dr10.autowalsurvey.domain.utils.Constants
+import dev.dr10.autowalsurvey.domain.utils.clearNumber
 import dev.dr10.autowalsurvey.ui.viewModel.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,18 +54,18 @@ fun WebViewComponent(
                             view.evaluateJavascript(viewModel.payloadForExtractProgress) { consoleResult ->
                                 val progressNumber = consoleResult.clearNumber()
                                 if (!consoleResult.contains("null") && !allProgress.contains(progressNumber)) {
-                                    Log.d("WebViewComponent", "CONSOLE::RESULT::$progressNumber")
                                     val payload = viewModel.payloadByProgress[progressNumber]
                                     if (payload != null) {
                                         view.evaluateJavascript(payload, null)
                                         if (progressNumber == "12") {
                                             runBlocking { delay(1000) }
-                                            view.evaluateJavascript("document.getElementById(\"buttonNext\").click();", null)
+                                            view.evaluateJavascript(viewModel.payloadButtonNext, null)
                                         }
                                     }
                                     else Log.e("WebViewComponent", "PAYLOAD::NOT::FOUND::$progressNumber")
                                     allProgress.add(progressNumber)
                                 } else {
+                                    if (allProgress.contains("87")) viewModel.addSurvey()
                                     allProgress.clear()
                                     onSurveyFinished()
                                 }
@@ -85,5 +86,3 @@ fun WebViewComponent(
         .padding(horizontal = 12.dp)
         .clip(RoundedCornerShape(15.dp))
 )
-
-fun String.clearNumber(): String = this.replace("%", "").replace("\"", "")

@@ -64,7 +64,6 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     kapt(libs.hilt.android.compiler)
 
-
     // Text Recognition
     implementation(libs.text.recognition)
 
@@ -79,5 +78,8 @@ dependencies {
 
     // Splash Screen
     implementation(libs.androidx.core.splashscreen)
+
+    // Datastore
+    implementation(libs.androidx.datastore.preferences)
 
 }

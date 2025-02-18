@@ -110,6 +110,7 @@ fun MainScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         CodeActionsComponent(
+            counter = state.counter,
             isProcessing = startProcess,
             onCameraLauncher = { cameraPermissionState.launchPermissionRequest() },
             onGalleryLauncher = { 
@@ -135,7 +136,8 @@ fun MainScreen(
                 currentImageIndex = 0
                 code = imagesToProcess[currentImageIndex].code
                 startProcess = true
-            }
+            },
+            onResetCounter = { viewModel.clearCounter() }
         )
 
         Spacer(Modifier.height(12.dp))

@@ -5,6 +5,7 @@ androidImageCropper = "4.5.0"
 coilCompose = "3.0.4"
 constraintlayoutCompose = "1.1.0"
 coreSplashscreen = "1.0.1"
+datastorePreferences = "1.1.2"
 hiltAndroid = "2.51.1"
 hiltNavigationCompose = "1.2.0"
 koinAndroidxCompose = "4.0.1"
@@ -24,6 +25,7 @@ android-image-cropper = { module = "com.vanniktech:android-image-cropper", versi
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }

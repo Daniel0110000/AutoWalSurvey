@@ -9,22 +9,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import dev.dr10.autowalsurvey.R
 import dev.dr10.autowalsurvey.ui.theme.AppTheme
 
 @Composable
 fun CodeActionsComponent(
+    counter: Int,
     isProcessing: Boolean,
     onCameraLauncher: () -> Unit,
     onGalleryLauncher: () -> Unit,
     onStartProcess: () -> Unit,
-    onRestartState: () -> Unit
+    onRestartState: () -> Unit,
+    onResetCounter: () -> Unit
 ) = ConstraintLayout(
     modifier = Modifier
         .fillMaxWidth()
@@ -32,7 +37,7 @@ fun CodeActionsComponent(
         .padding(horizontal = 12.dp)
         .background(AppTheme.colors.onBackground, shape = RoundedCornerShape(15.dp))
 ) {
-    val (appIco, pickImageBtn, takePhotoBtn, startProcessBtn) = createRefs()
+    val (appIcon, counterBtn, pickImageBtn, takePhotoBtn, startProcessBtn) = createRefs()
 
     Icon(
         painter = painterResource(R.drawable.ic_app),
@@ -40,12 +45,32 @@ fun CodeActionsComponent(
         tint = AppTheme.colors.complementary,
         modifier = Modifier
             .size(25.dp)
-            .constrainAs(appIco) {
+            .constrainAs(appIcon) {
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
                 start.linkTo(parent.start, 10.dp)
             }
     )
+
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .background(AppTheme.colors.complementary, shape = RoundedCornerShape(15.dp))
+            .clickable { onResetCounter() }
+            .constrainAs(counterBtn) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                end.linkTo(pickImageBtn.start, 10.dp)
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = counter.toString(),
+            color = AppTheme.colors.onBackground,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
 
     Box(
         modifier = Modifier
