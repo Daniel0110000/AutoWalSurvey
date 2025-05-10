@@ -31,8 +31,9 @@ class MainViewModel @Inject constructor(
     val payloadButtonNext = "document.getElementById(\"buttonNext\").click();"
 
     val payloadByProgress: Map<String, String> = mapOf(
-        "12" to "document.getElementById(\"onf_q_wmcam_brick_ltr_scale11_10\").click(); document.getElementById(\"spl_q_wmcam_brick_comentario_ltr_promotor_cmt\").value = \"Buen Servicio\"; document.getElementById(\"onf_q_wmcam_brick_flex_yn_2\").click();",
-        "87" to "document.getElementById(\"onf_q_wmcam_sorteo_trabaja_en_wm_yn_2\").click(); document.getElementById(\"onf_q_wmcam_sorteo_participar_yn_2\").click(); document.getElementById(\"onf_q_wmcam_sorteo_comunicaciones_yn_2\").click(); document.getElementById(\"buttonFinish\").click();"
+        "11" to "document.getElementById(\"onf_q_wmcam_brick_ltr_scale11_10\").click(); document.getElementById(\"spl_q_wmcam_brick_comentario_ltr_promotor_cmt\").value = \"Buen Servicio\";",
+        "33" to "document.getElementById(\"onf_q_wmcam_brick_flex_yn_2\").click();",
+        "88" to "document.getElementById(\"onf_q_wmcam_sorteo_trabaja_en_wm_yn_2\").click(); document.getElementById(\"onf_q_wmcam_sorteo_participar_yn_2\").click(); document.getElementById(\"onf_q_wmcam_sorteo_comunicaciones_yn_2\").click(); document.getElementById(\"buttonFinish\").click();"
     )
 
     init {

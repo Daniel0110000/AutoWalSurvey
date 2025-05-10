@@ -57,7 +57,7 @@ fun WebViewComponent(
                                     val payload = viewModel.payloadByProgress[progressNumber]
                                     if (payload != null) {
                                         view.evaluateJavascript(payload, null)
-                                        if (progressNumber == "12") {
+                                        if (progressNumber == "11") {
                                             runBlocking { delay(1000) }
                                             view.evaluateJavascript(viewModel.payloadButtonNext, null)
                                         }
@@ -65,7 +65,7 @@ fun WebViewComponent(
                                     else Log.e("WebViewComponent", "PAYLOAD::NOT::FOUND::$progressNumber")
                                     allProgress.add(progressNumber)
                                 } else {
-                                    if (allProgress.contains("87")) viewModel.addSurvey()
+                                    if (allProgress.contains("88")) viewModel.addSurvey()
                                     allProgress.clear()
                                     onSurveyFinished()
                                 }
