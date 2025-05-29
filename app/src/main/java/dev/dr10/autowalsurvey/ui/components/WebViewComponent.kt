@@ -2,8 +2,10 @@ package dev.dr10.autowalsurvey.ui.components
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.webkit.CookieManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,6 +34,10 @@ fun WebViewComponent(
 ) = AndroidView(
     factory = { context ->
         WebView(context).apply {
+            CookieManager.getInstance().apply {
+                removeAllCookies(null)
+                flush()
+            }
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             settings.allowContentAccess = true
@@ -57,7 +63,7 @@ fun WebViewComponent(
                                     val payload = viewModel.payloadByProgress[progressNumber]
                                     if (payload != null) {
                                         view.evaluateJavascript(payload, null)
-                                        if (progressNumber == "11") {
+                                        if (progressNumber == "11" || progressNumber == "33") {
                                             runBlocking { delay(1000) }
                                             view.evaluateJavascript(viewModel.payloadButtonNext, null)
                                         }
