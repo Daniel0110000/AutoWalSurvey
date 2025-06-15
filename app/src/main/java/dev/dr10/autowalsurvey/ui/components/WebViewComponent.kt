@@ -56,24 +56,22 @@ fun WebViewComponent(
                             view.evaluateJavascript(viewModel.getFirstPayload(code), null)
                             allProgress.add("0")
                         } else {
-                            Log.d("WebViewComponent", "Enter to else")
                             view.evaluateJavascript(viewModel.payloadForExtractProgress) { consoleResult ->
                                 val progressNumber = consoleResult.clearNumber()
-                                if (!consoleResult.contains("null") && !allProgress.contains(progressNumber)) {
+                                if (progressNumber.contains("null").not() && allProgress.contains(progressNumber).not()) {
                                     val payload = viewModel.payloadByProgress[progressNumber]
+                                    Log.d("WebViewComponent", "PAYLOAD::${payload}::${progressNumber}")
                                     if (payload != null) {
                                         view.evaluateJavascript(payload, null)
-                                        if (progressNumber == "11" || progressNumber == "33") {
-                                            runBlocking { delay(1000) }
-                                            view.evaluateJavascript(viewModel.payloadButtonNext, null)
-                                        }
-                                    }
-                                    else Log.e("WebViewComponent", "PAYLOAD::NOT::FOUND::$progressNumber")
+                                        runBlocking { delay(1000) }
+                                        view.evaluateJavascript(viewModel.payloadButtonNext, null)
+                                    } else Log.e("WebViewComponent", "PAYLOAD::NOT::FOUND::$progressNumber")
                                     allProgress.add(progressNumber)
                                 } else {
                                     if (allProgress.contains("88")) viewModel.addSurvey()
                                     allProgress.clear()
                                     onSurveyFinished()
+                                    Log.d("WebViewComponent", "FINISH::SURVEY")
                                 }
                             }
                         }

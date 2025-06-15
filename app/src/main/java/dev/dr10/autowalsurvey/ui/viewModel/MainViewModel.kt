@@ -31,9 +31,13 @@ class MainViewModel @Inject constructor(
     val payloadButtonNext = "document.getElementById(\"buttonNext\").click();"
 
     val payloadByProgress: Map<String, String> = mapOf(
-        "11" to "document.getElementById(\"onf_q_wmcam_brick_ltr_scale11_10\").click(); document.getElementById(\"spl_q_wmcam_brick_comentario_ltr_promotor_cmt\").value = \"Buen Servicio\";",
-        "33" to "document.getElementById(\"onf_q_wmcam_brick_flex_yn_2\").click();",
-        "88" to "document.getElementById(\"onf_q_wmcam_sorteo_trabaja_en_wm_yn_2\").click(); document.getElementById(\"onf_q_wmcam_sorteo_participar_yn_2\").click(); document.getElementById(\"onf_q_wmcam_sorteo_comunicaciones_yn_2\").click(); document.getElementById(\"buttonFinish\").click();"
+        "11" to "${"onf_q_wmcam_brick_ltr_scale11_9".clickElementById()} ${getCommentValue()}",
+        "33" to "onf_q_wmcam_brick_flex_yn_1".clickElementById(),
+        "44" to "onf_q_wmcam_brick_percepcion_precios_enum_21".clickElementById(),
+        "55" to "${"onf_q_wmcam_brick_depto_abarrotes_yn_1".clickElementById()} ${"onf_q_wmcam_brick_ltr_abarrotes_scale11_9v".clickElementById()} ${"onf_q_wmcam_brick_razon_promotor_abarrotes_enum_1".clickElementById()}",
+        "66" to "${"onf_q_wmcam_brick_infra_limpieza_scale11_9".clickElementById()} ${"onf_q_wmcam_brick_infra_temperatura_scale11_9".clickElementById()} ${"onf_q_wmcam_brick_infra_rapidez_entrada_salida_scale11_9".clickElementById()} ${"onf_q_wmcam_brick_infra_instalaciones_scale11_9".clickElementById()} ${"onf_q_wmcam_brick_infra_amabilidad_scale11_9".clickElementById()} ${"onf_q_wmcam_brick_infra_iluminacion_scale11_9".clickElementById()} ${"onf_q_wmcam_brick_infra_guardias_seguridad_scale11_9".clickElementById()}",
+        "77" to "${"onf_q_wmcam_brick_infra_estacionamiento_scale11na_9".clickElementById()} ${"onf_q_wmcam_brick_infra_personal_recibir_ayuda_scale11na_8".clickElementById()} ${"onf_q_wmcam_brick_infra_disponibilidad_carritos_scale11na_9".clickElementById()} ${"onf_q_wmcam_brick_infra_limpieza_banos_scale11na_11".clickElementById()} ${"onf_q_wmcam_brick_infra_servicio_atencion_scale11na_9".clickElementById()}", // onf_q_wmcam_brick_infra_estacionamiento_scale11na_9, c, onf_q_wmcam_brick_infra_disponibilidad_carritos_scale11na_9, c, onf_q_wmcam_brick_infra_servicio_atencion_scale11na_9
+        "88" to "${"onf_q_wmcam_sorteo_trabaja_en_wm_yn_2".clickElementById()} ${"onf_q_wmcam_sorteo_participar_yn_2".clickElementById()} ${"onf_q_wmcam_sorteo_comunicaciones_yn_2".clickElementById()} ${"buttonFinish".clickElementById()}"
     )
 
     init {
@@ -98,4 +102,24 @@ class MainViewModel @Inject constructor(
     private fun updateState(update: MainState.() -> MainState) {
         _state.value = _state.value.update()
     }
+
+    fun getCommentValue(): String {
+        val comments = listOf(
+            "Buen servicio",
+            "Atención de calidad",
+            "Excelente trato al cliente",
+            "Servicio impecable",
+            "Atención profesional",
+            "Trato cordial y eficiente",
+            "Asistencia oportuna y efectiva",
+            "Servicio sobresaliente",
+            "Atención personalizada y amable",
+            "Experiencia satisfactoria",
+            "Servicio rápido y confiable"
+        )
+
+        return "document.getElementById(\"spl_q_wmcam_brick_comentario_ltr_promotor_cmt\").value = \"${comments.random()}\";"
+    }
+
+    fun String.clickElementById(): String = "document.getElementById(\"${this}\").click();"
 }
